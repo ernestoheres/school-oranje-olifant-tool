@@ -63,7 +63,7 @@ function App() {
   )
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1f2933]">
+    <div className="flex items-center justify-center bg-[#1f2933]">
       <div className="relative w-full max-w-5xl flex flex-col items-center justify-center bg-gradient-to-br from-orange-100 via-white to-orange-200 overflow-hidden rounded-none sm:rounded-2xl shadow-none sm:shadow-2xl py-10">
         {/* Dagobert Duck image in the corner */}
     
