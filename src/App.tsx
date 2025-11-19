@@ -1,6 +1,44 @@
-import {  useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
+
+// move btw here so both calculateTotals and App can use it
+export const btw: any = {
+  nl: 0.21,
+  be: 0.21,
+  de: 0.19,
+  fr: 0.2,
+  at: 0.2,
+  ch: 0.081
+}
+
+export function calculateTotals(
+  itemBedrag: number,
+  itemAantal: number,
+  land: keyof typeof btw,
+  btwTable: typeof btw
+) {
+  const sumAantal = itemBedrag * itemAantal
+
+  let korting = 0.03
+  if (sumAantal > 5000) korting = 0.05
+  if (sumAantal > 7000) korting = 0.07
+  if (sumAantal > 10000) korting = 0.10
+  if (sumAantal > 500000) korting = 0.15
+
+  const kortingBedrag = sumAantal * korting
+  const subtotaalNaKorting = sumAantal - kortingBedrag
+  const btwBedrag = subtotaalNaKorting * btwTable[land]
+  const finalAmount = subtotaalNaKorting + btwBedrag
+
+  return {
+    sumAantal,
+    kortingProcent: korting,
+    kortingBedrag,
+    subtotaalNaKorting,
+    btwBedrag,
+    finalAmount
+  }
+}
 
 function App() {
   const [itemBedrag, setitemBedrag] = useState(0)
@@ -11,45 +49,13 @@ function App() {
   // NEW: popup visibility
   const [showRichPopup, setShowRichPopup] = useState(false)
 
-  const btw: any =  {
-    nl: 0.21,
-    be: 0.21,
-    de: 0.19,
-    fr: 0.20,
-    at: 0.20,
-    ch: 0.081
-  }
-
   useEffect(() => {
-    // totaalbedrag excl. btw
-    const sumAantal = itemBedrag * itemAantal
+    const result = calculateTotals(itemBedrag, itemAantal, land as any, btw)
 
-    // korting op basis van totaal excl. btw
-    let korting = 0.03
-    if (sumAantal > 5000) {
-      korting = 0.05
-    }
-    if (sumAantal > 7000) {
-      korting = 0.07
-    }
-    if (sumAantal > 10000) {
-      korting = 0.10
-    }
-    if (sumAantal > 500000) {
-      korting = 0.15
-    }
-    setKortingProcent(korting)
+    setKortingProcent(result.kortingProcent)
+    setEindBedrag(result.finalAmount)
 
-    // bereken kortingbedrag en btw apart (alleen style / duidelijkheid)
-    const kortingBedrag = sumAantal * korting
-    const subtotaalNaKorting = sumAantal - kortingBedrag
-    const btwBedrag = subtotaalNaKorting * btw[land]
-
-    const finalAmount = subtotaalNaKorting + btwBedrag
-    setEindBedrag(finalAmount)
-
-    // NEW: trigger popup purely visually
-    if (finalAmount > 10000) {
+    if (result.finalAmount > 10000) {
       setShowRichPopup(true)
     }
   }, [itemBedrag, land, itemAantal])
