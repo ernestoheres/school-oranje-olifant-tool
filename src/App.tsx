@@ -62,6 +62,12 @@ function App() {
     Math.max(1, Math.floor(eindBedrag / noteValue))
   )
 
+  // extra display values (no new logic)
+  const sumAantal = itemBedrag * itemAantal
+  const kortingBedrag = sumAantal * kortingProcent
+  const subtotaalNaKorting = sumAantal - kortingBedrag
+  const btwBedragDisplay = subtotaalNaKorting * btw[land]
+
   return (
     <div className="flex items-center justify-center bg-[#1f2933]">
       <div className="relative w-full max-w-5xl flex flex-col items-center justify-center bg-gradient-to-br from-orange-100 via-white to-orange-200 overflow-hidden rounded-none sm:rounded-2xl shadow-none sm:shadow-2xl py-10">
@@ -121,13 +127,31 @@ function App() {
 
             <div className="mt-4 p-4 rounded-xl bg-orange-50 border border-orange-100 space-y-1">
               <p className="text-sm text-gray-700 text-center md:text-left">
+                Subtotaal (excl. btw):{' '}
+                <span className="font-semibold text-gray-900">
+                  € {sumAantal.toFixed(2)}
+                </span>
+              </p>
+              <p className="text-sm text-gray-700 text-center md:text-left">
                 Korting:{' '}
                 <span className="font-semibold text-orange-600">
-                  {(kortingProcent * 100).toFixed(2)}%
+                  {(kortingProcent * 100).toFixed(2)}% (-€ {kortingBedrag.toFixed(2)})
+                </span>
+              </p>
+              <p className="text-sm text-gray-700 text-center md:text-left">
+                Subtotaal na korting (excl. btw):{' '}
+                <span className="font-semibold text-gray-900">
+                  € {subtotaalNaKorting.toFixed(2)}
+                </span>
+              </p>
+              <p className="text-sm text-gray-700 text-center md:text-left">
+                BTW bedrag:{' '}
+                <span className="font-semibold text-emerald-700">
+                  € {btwBedragDisplay.toFixed(2)}
                 </span>
               </p>
               <p className="text-lg font-bold text-gray-800 text-center md:text-left">
-                Totaal bedrag:{' '}
+                Totaal bedrag (incl. btw):{' '}
                 <span className="text-orange-600">
                   € {eindBedrag.toFixed(2)}
                 </span>
@@ -203,14 +227,13 @@ function App() {
           <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/60">
             {/* money rain */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden">
-              {Array.from({ length: 25 }).map((_, i) => (
+              {Array.from({ length: 30 }).map((_, i) => (
                 <div
                   key={i}
-                  className="absolute text-3xl md:text-4xl select-none"
+                  className="money-drop text-3xl md:text-4xl select-none"
                   style={{
-                    left: `${(i * 4) % 100}%`,
-                    animation: `moneyFall ${4 + (i % 5)}s linear infinite`,
-                    animationDelay: `${i * 0.2}s`
+                    left: `${(i * 3.3) % 100}%`,
+                    animationDelay: `${i * 0.25}s`
                   }}
                 >
                   💵
